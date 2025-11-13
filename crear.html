@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Flashcard 🔥</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+
+    header {
+      background-color: #c62828;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    main {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.3rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 1.5rem;
+      padding: 0.6rem 1.2rem;
+      background-color: #c62828;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #8e0000;
+    }
+
+    #volver {
+      background-color: gray;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>➕ Crear Flashcard</h1>
+  </header>
+
+  <main>
+    <label for="pregunta">Pregunta:</label>
+    <input type="text" id="pregunta" placeholder="Escribe la pregunta aquí">
+
+    <label>Opciones de respuesta:</label>
+    <input type="text" id="op1" placeholder="Opción 1">
+    <input type="text" id="op2" placeholder="Opción 2">
+    <input type="text" id="op3" placeholder="Opción 3">
+    <input type="text" id="op4" placeholder="Opción 4">
+
+    <label for="correcta">Opción correcta (1, 2, 3 o 4):</label>
+    <select id="correcta">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+    </select>
+
+    <label for="modulo">Módulo:</label>
+    <select id="modulo">
+      <option value="1">Módulo 1</option>
+      <option value="2">Módulo 2</option>
+      <option value="3">Módulo 3</option>
+    </select>
+
+    <button id="guardar">Guardar Flashcard</button>
+    <button id="volver" onclick="window.location.href='index.html'">Volver al inicio</button>
+  </main>
+
+  <script>
+    const guardar = document.getElementById("guardar");
+
+    guardar.addEventListener("click", () => {
+      const pregunta = document.getElementById("pregunta").value.trim();
+      const op1 = document.getElementById("op1").value.trim();
+      const op2 = document.getElementById("op2").value.trim();
+      const op3 = document.getElementById("op3").value.trim();
+      const op4 = document.getElementById("op4").value.trim();
+      const correcta = document.getElementById("correcta").value;
+      const modulo = document.getElementById("modulo").value;
+
+      if (!pregunta || !op1 || !op2 || !op3 || !op4) {
+        alert("Por favor, completa todos los campos.");
+        return;
+      }
+
+      const nuevaFlashcard = {
+        pregunta,
+        opciones: [op1, op2, op3, op4],
+        correcta,
+        modulo
+      };
+
+      // Guardar temporalmente
+      localStorage.setItem("nuevaFlashcard", JSON.stringify(nuevaFlashcard));
+
+      alert("✅ Flashcard guardada correctamente. Volviendo al inicio...");
+      window.location.href = "index.html";
+    });
+  </script>
+</body>
+</html>
