@@ -3,176 +3,234 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Flashcards 🔥</title>
+  <title>Flashcards Bomberos 🔥</title>
   <style>
+    :root {
+      --rojo-principal: #c62828;
+      --rojo-oscuro: #8e0000;
+      --gris-claro: #f5f5f5;
+      --gris-oscuro: #1e1e1e;
+      --texto-claro: #ffffff;
+      --texto-oscuro: #333333;
+    }
+
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f5f5f5;
-      color: #333;
+      background-color: var(--gris-claro);
+      color: var(--texto-oscuro);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.modo-oscuro {
+      background-color: var(--gris-oscuro);
+      color: var(--texto-claro);
     }
 
     header {
-      background-color: #c62828;
-      color: white;
-      padding: 1rem;
       text-align: center;
+      padding: 1rem;
+      background-color: var(--rojo-principal);
+      color: white;
+      position: relative;
+    }
+
+    #modoBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: var(--gris-oscuro);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      padding: 0.4rem 0.6rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    #crearBtn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: var(--rojo-oscuro);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+    }
+
+    #eliminarBtn {
+      display: block;
+      margin: 1rem auto 0 auto;
+      background-color: gray;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+    }
+
+    #eliminarBtn:hover {
+      background-color: #555;
     }
 
     main {
       max-width: 900px;
       margin: 2rem auto;
+      padding: 1rem;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 1.5rem;
+      gap: 25px;
     }
 
     .flashcard {
-      width: 220px;
-      background-color: #ffebee;
-      border: 2px solid #c62828;
-      border-radius: 12px;
-      padding: 1rem;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      transition: transform 0.2s;
-    }
-
-    .flashcard:hover {
-      transform: scale(1.03);
-    }
-
-    .flashcard h3 {
-      color: #c62828;
-      font-size: 1.1rem;
-    }
-
-    .flashcard ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .flashcard li {
-      background-color: #ffcdd2;
-      padding: 0.4rem;
-      margin-top: 0.3rem;
-      border-radius: 6px;
-    }
-
-    .correcta {
-      background-color: #ef5350 !important;
+      background: #c62828;
       color: white;
+      width: 220px;
+      height: 180px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1rem;
+      cursor: pointer;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.5s, border 0.3s;
+    }
+
+    .flashcard.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .flashcard.seleccionada {
+      border: 4px solid yellow;
+    }
+
+    .flashcard .front, .flashcard .back {
+      position: absolute;
+      backface-visibility: hidden;
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .flashcard .back {
+      transform: rotateY(180deg);
+    }
+
+    .respuesta {
+      margin-top: 0.5rem;
       font-weight: bold;
     }
 
-    .botones {
-      text-align: center;
-      margin: 2rem;
+    .correcta {
+      color: #90ee90;
     }
 
-    button {
-      background-color: #c62828;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 0.6rem 1.2rem;
-      margin: 0.3rem;
-      cursor: pointer;
+    .incorrecta {
+      color: #ff8080;
     }
 
-    button:hover {
-      background-color: #8e0000;
-    }
-
-    #importar {
-      display: none;
-    }
   </style>
 </head>
 <body>
   <header>
-    <h1>🔥 Mis Flashcards</h1>
+    <h1>Flashcards Bomberos 🔥</h1>
+    <button id="modoBtn">🌙</button>
+    <button id="crearBtn" onclick="window.location.href='crear.html'">➕ Crear</button>
   </header>
 
-  <div class="botones">
-    <button onclick="window.location.href='crear.html'">➕ Crear Flashcard</button>
-    <button id="exportar">📤 Exportar Flashcards</button>
-    <input type="file" id="importar" accept=".json">
-    <button id="importarBtn">📥 Importar Flashcards</button>
-  </div>
+  <button id="eliminarBtn">🗑️ Eliminar flashcard seleccionada</button>
 
   <main id="contenedor"></main>
 
   <script>
-    // 📌 Mostrar flashcards
+    const contenedor = document.getElementById("contenedor");
+    const modoBtn = document.getElementById("modoBtn");
+    const eliminarBtn = document.getElementById("eliminarBtn");
+
+    modoBtn.addEventListener("click", () => {
+      document.body.classList.toggle("modo-oscuro");
+      modoBtn.textContent = document.body.classList.contains("modo-oscuro") ? "☀️" : "🌙";
+    });
+
+    // 🔥 Cargar flashcards desde localStorage
+    let flashcards = JSON.parse(localStorage.getItem("flashcards")) || [];
+
+    // Renderizar flashcards
     function mostrarFlashcards() {
-      const contenedor = document.getElementById("contenedor");
       contenedor.innerHTML = "";
-
-      const flashcards = JSON.parse(localStorage.getItem("flashcards") || "[]");
-
-      if (flashcards.length === 0) {
-        contenedor.innerHTML = "<p style='text-align:center;'>Aún no has creado ningún flashcard.</p>";
-        return;
-      }
-
-      flashcards.forEach((f) => {
-        const card = document.createElement("div");
-        card.className = "flashcard";
-
-        card.innerHTML = `
-          <h3>${f.pregunta}</h3>
-          <ul>
-            ${f.opciones.map((op, i) => `
-              <li class="${parseInt(f.correcta) === i + 1 ? 'correcta' : ''}">
-                ${i + 1}. ${op}
-              </li>`).join('')}
-          </ul>
-          <p><b>Módulo:</b> ${f.modulo}</p>
+      flashcards.forEach((card, index) => {
+        const div = document.createElement("div");
+        div.classList.add("flashcard");
+        div.dataset.index = index;
+        div.innerHTML = `
+          <div class="front">
+            <p>${card.pregunta}</p>
+          </div>
+          <div class="back">
+            ${card.opciones.map((op, i) => `
+              <button class="opcion" data-i="${i+1}" style="margin:4px;">${op}</button>
+            `).join("")}
+            <p class="respuesta" id="resp-${index}"></p>
+          </div>
         `;
 
-        contenedor.appendChild(card);
+        div.addEventListener("click", (e) => {
+          if (!e.target.classList.contains("opcion")) {
+            div.classList.toggle("flipped");
+          }
+        });
+
+        div.addEventListener("click", (e) => {
+          if (e.target.classList.contains("opcion")) {
+            const seleccion = e.target.getAttribute("data-i");
+            const resultado = document.getElementById(`resp-${index}`);
+            if (seleccion === card.correcta) {
+              resultado.textContent = "✅ Correcto";
+              resultado.className = "respuesta correcta";
+            } else {
+              resultado.textContent = "❌ Incorrecto";
+              resultado.className = "respuesta incorrecta";
+            }
+          }
+        });
+
+        // Seleccionar flashcard
+        div.addEventListener("dblclick", () => {
+          document.querySelectorAll(".flashcard").forEach(f => f.classList.remove("seleccionada"));
+          div.classList.add("seleccionada");
+        });
+
+        contenedor.appendChild(div);
       });
     }
 
     mostrarFlashcards();
 
-    // 📤 Exportar flashcards
-    document.getElementById("exportar").addEventListener("click", () => {
-      const flashcards = JSON.parse(localStorage.getItem("flashcards") || "[]");
-      const blob = new Blob([JSON.stringify(flashcards, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
+    eliminarBtn.addEventListener("click", () => {
+      const seleccionada = document.querySelector(".flashcard.seleccionada");
+      if (!seleccionada) {
+        alert("⚠️ Primero selecciona una flashcard (haz doble clic sobre ella).");
+        return;
+      }
 
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "flashcards.json";
-      a.click();
-
-      URL.revokeObjectURL(url);
-    });
-
-    // 📥 Importar flashcards
-    const importarInput = document.getElementById("importar");
-    const importarBtn = document.getElementById("importarBtn");
-
-    importarBtn.addEventListener("click", () => importarInput.click());
-
-    importarInput.addEventListener("change", (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const nuevos = JSON.parse(e.target.result);
-          localStorage.setItem("flashcards", JSON.stringify(nuevos));
-          alert("✅ Flashcards importados correctamente. Actualiza la página para verlos.");
-        } catch (error) {
-          alert("⚠️ Archivo no válido.");
-        }
-      };
-      reader.readAsText(file);
+      const index = parseInt(seleccionada.dataset.index);
+      flashcards.splice(index, 1);
+      localStorage.setItem("flashcards", JSON.stringify(flashcards));
+      mostrarFlashcards();
+      alert("🗑️ Flashcard eliminada correctamente.");
     });
   </script>
 </body>
