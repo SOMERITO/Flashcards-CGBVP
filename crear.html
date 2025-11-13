@@ -60,6 +60,10 @@
       background-color: gray;
       margin-left: 10px;
     }
+
+    #volver:hover {
+      background-color: #555;
+    }
   </style>
 </head>
 <body>
@@ -93,7 +97,9 @@
     </select>
 
     <button id="guardar">Guardar Flashcard</button>
-    <button id="volver" onclick="window.location.href='index.html'">Volver al inicio</button>
+    <button id="volver" onclick="window.location.href='https://somerito.github.io/Flashcards-CGBVP/index.html'">
+      Volver al inicio
+    </button>
   </main>
 
   <script>
@@ -109,7 +115,7 @@
       const modulo = document.getElementById("modulo").value;
 
       if (!pregunta || !op1 || !op2 || !op3 || !op4) {
-        alert("Por favor, completa todos los campos.");
+        alert("⚠️ Por favor, completa todos los campos antes de guardar.");
         return;
       }
 
@@ -120,11 +126,13 @@
         modulo
       };
 
-      // Guardar temporalmente
-      localStorage.setItem("nuevaFlashcard", JSON.stringify(nuevaFlashcard));
+      // Guardar acumulando todas las flashcards
+      const cards = JSON.parse(localStorage.getItem("flashcards") || "[]");
+      cards.push(nuevaFlashcard);
+      localStorage.setItem("flashcards", JSON.stringify(cards));
 
       alert("✅ Flashcard guardada correctamente. Volviendo al inicio...");
-      window.location.href = "index.html";
+      window.location.href = "https://somerito.github.io/Flashcards-CGBVP/index.html";
     });
   </script>
 </body>
